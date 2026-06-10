@@ -1,0 +1,26 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model LogEntry {
+  id            String   @id @default(uuid())
+  title         String   // Judul aktivitas
+  date          DateTime // Tanggal
+  startTime     String   // Jam mulai (format "HH:MM")
+  endTime       String   // Jam selesai (format "HH:MM")
+  durationHours Float    // Durasi jam (desimal)
+  category      String   // Kategori (e.g., Coding, Meeting, UI/UX, dll)
+  details       String   // Detail aktivitas (Catatan)
+  documentation String   // Dokumentasi (e.g., link github, google drive, dll)
+  createdAt     DateTime @default(now())
+}
+
+model WeeklyReview {
+  weekIndex     Int      @id // Indeks Minggu (1-18)
+  summaryText   String   // Catatan evaluasi/summary mingguan
+  updatedAt     DateTime @updatedAt
+}
