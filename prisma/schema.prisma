@@ -6,8 +6,20 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  fullName      String
+  createdAt     DateTime       @default(now())
+  logEntries    LogEntry[]
+  weeklyReviews WeeklyReview[]
+}
+
 model LogEntry {
   id            String   @id @default(uuid())
+  userId        String   // Foreign key linking to User
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title         String   // Judul aktivitas
   date          DateTime // Tanggal
   startTime     String   // Jam mulai (format "HH:MM")
@@ -15,12 +27,17 @@ model LogEntry {
   durationHours Float    // Durasi jam (desimal)
   category      String   // Kategori (e.g., Coding, Meeting, UI/UX, dll)
   details       String   // Detail aktivitas (Catatan)
-  documentation String   // Dokumentasi (e.g., link github, google drive, dll)
+  documentation String   // Dokumentasi link
   createdAt     DateTime @default(now())
 }
 
 model WeeklyReview {
-  weekIndex     Int      @id // Indeks Minggu (1-18)
+  id            String   @id @default(uuid())
+  userId        String   // Foreign key linking to User
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekIndex     Int      // Indeks Minggu (1-18)
   summaryText   String   // Catatan evaluasi/summary mingguan
   updatedAt     DateTime @updatedAt
+
+  @@unique([userId, weekIndex]) // A user has exactly one review per week
 }

@@ -10,8 +10,8 @@ if (globalForPrisma.prisma) {
   prismaInstance = globalForPrisma.prisma;
 } else {
   const connectionString = process.env.DATABASE_URL;
-  
-  if (connectionString && connectionString !== 'postgresql://postgres:postgres@localhost:5432/web_logbook_magang?schema=public') {
+
+  if (connectionString) {
     // Standard database connection pool
     const pool = new pg.Pool({ connectionString });
     const adapter = new PrismaPg(pool);

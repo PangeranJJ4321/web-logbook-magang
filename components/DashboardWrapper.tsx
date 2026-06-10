@@ -7,21 +7,28 @@ import StatsCard from './StatsCard';
 import WeeklyOverview from './WeeklyOverview';
 import LogList from './LogList';
 import LogEntryForm from './LogEntryForm';
+import { logoutUser } from '@/app/actions';
+import { useRouter } from 'next/navigation';
 
 interface DashboardWrapperProps {
   initialEntries: LogEntry[];
   initialReviews: WeeklyReview[];
+  userFullName: string;
 }
 
 export default function DashboardWrapper({
   initialEntries,
   initialReviews,
+  userFullName,
 }: DashboardWrapperProps) {
   // Determine current week index based on today's date
   const [activeWeek, setActiveWeek] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editData, setEditData] = useState<LogEntry | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  const router = useRouter();
 
   // Calculate and set initial active week once on client mount
   useEffect(() => {
@@ -46,7 +53,14 @@ export default function DashboardWrapper({
 
   const handleSelectWeek = (week: number) => {
     setActiveWeek(week);
-    setIsSidebarOpen(false); // Close mobile drawer when week changes
+    setIsSidebarOpen(false);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await logoutUser();
+    router.push('/login');
+    router.refresh();
   };
 
   return (
@@ -69,7 +83,7 @@ export default function DashboardWrapper({
             Logbook Magang
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
-            Pencatatan aktivitas harian & pemantauan target 900 jam magang
+            Halo, <strong style={{ color: 'var(--primary-hover)' }}>{userFullName}</strong>! Kelola aktivitas dan target 900 jam magang Anda disini.
           </p>
         </div>
         
@@ -89,6 +103,15 @@ export default function DashboardWrapper({
             style={{ padding: '12px 18px', fontSize: '14px' }}
           >
             Tambah Log Harian
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="btn btn-secondary"
+            style={{ padding: '12px 18px', fontSize: '14px' }}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? 'Keluar...' : 'Keluar'}
           </button>
         </div>
       </header>
