@@ -55,7 +55,12 @@ export async function registerUser(fullName: string, email: string, password: st
       },
     });
 
-    // Send email confirmation link with token parameter
+    console.log('DEBUG RESEND CONFIG:', {
+      hasResend: !!resend,
+      envKey: process.env.RESEND_API_KEY ? `${process.env.RESEND_API_KEY.slice(0, 10)}...` : 'undefined',
+      rawEnv: process.env.RESEND_API_KEY
+    });
+
     const confirmUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/auth/confirm?token=${token}`;
 
     if (resend) {
