@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "Logbook Magang",
     images: [
       {
-        url: "/app.webp",
+        url: "https://res.cloudinary.com/douoytv3i/image/upload/v1781155763/app_eidhcz.webp",
         width: 1200,
         height: 630,
         alt: "Logbook Magang Dashboard Preview"
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Logbook Magang — 900 Jam Target Tracker",
     description: "Catat aktivitas harian dan pantau progress target jam magang Anda secara real-time.",
-    images: ["/app.webp"],
+    images: ["https://res.cloudinary.com/douoytv3i/image/upload/v1781155763/app_eidhcz.webp"],
   },
   robots: {
     index: true,
