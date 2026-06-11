@@ -7,14 +7,16 @@ export const metadata: Metadata = {
     default: "Logbook Magang — 900 Jam Target Tracker",
     template: "%s | Logbook Magang"
   },
-  description: "Aplikasi pencatatan aktivitas magang harian untuk melacak progress target 900 jam kerja secara akurat dan mudah.",
+  description: "Aplikasi pencatatan aktivitas harian magang untuk mahasiswa, siswa SMK, dan peserta internship industri. Lacak progress jam kerja secara akurat dan mudah.",
   keywords: [
     "logbook magang",
-    "900 jam magang",
+    "logbook magang mahasiswa",
+    "logbook magang SMK",
+    "jurnal pkl mahasiswa",
+    "catatan harian magang",
     "target jam kerja magang",
     "tracker magang harian",
     "weekly report magang",
-    "jurnal harian magang",
     "internship tracker",
     "buildwithjj"
   ],
