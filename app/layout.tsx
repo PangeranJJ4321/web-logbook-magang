@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "internship tracker",
     "buildwithjj"
   ],
-  authors: [{ name: "JJ" }],
+  authors: [{ name: "PangeranJJ4321" }],
   creator: "JJ",
   publisher: "Build with JJ",
   alternates: {
