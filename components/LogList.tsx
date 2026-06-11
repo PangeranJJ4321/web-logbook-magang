@@ -66,6 +66,7 @@ export default function LogList({
   };
 
   const handleDelete = async (id: string) => {
+    if (isDeleting) return;
     setIsDeleting(id);
     try {
       const result = await deleteLogEntry(id);
@@ -212,6 +213,7 @@ export default function LogList({
                       onClick={() => onEdit(entry)}
                       className="btn btn-secondary"
                       style={{ padding: '6px 10px', fontSize: '12px', borderRadius: '0' }}
+                      disabled={isDeleting !== null}
                     >
                       ✏️ Edit
                     </button>
@@ -223,7 +225,7 @@ export default function LogList({
                       }}
                       className="btn btn-danger"
                       style={{ padding: '6px 10px', fontSize: '12px', borderRadius: '0' }}
-                      disabled={isDeleting === entry.id}
+                      disabled={isDeleting !== null}
                     >
                       {isDeleting === entry.id ? 'Menghapus...' : '🗑️ Hapus'}
                     </button>

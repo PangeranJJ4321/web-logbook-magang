@@ -58,6 +58,7 @@ export default function WeeklyOverview({
   };
 
   const handleSaveReview = async () => {
+    if (isSaving) return;
     setIsSaving(true);
     setError(null);
     setSaveSuccess(false);

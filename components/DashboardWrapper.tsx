@@ -63,6 +63,7 @@ export default function DashboardWrapper({
   };
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
     setIsLoggingOut(true);
     await logoutUser();
     router.push('/login');

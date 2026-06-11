@@ -34,6 +34,7 @@ function LoginFormContent() {
   }, [cooldown]);
 
   const handleResendEmail = async () => {
+    if (isResending || cooldown > 0) return;
     if (!email.trim()) {
       setResendError('Silakan masukkan alamat email Anda terlebih dahulu.');
       return;
@@ -59,6 +60,7 @@ function LoginFormContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setError(null);
     setIsSubmitting(true);
 
