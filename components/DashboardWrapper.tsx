@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { LogEntry, WeeklyReview } from '@/types';
 import { getWeekIndexForDate } from '@/utils/dateHelpers';
 import StatsCard from './StatsCard';
@@ -111,6 +112,14 @@ export default function DashboardWrapper({
           >
             Tambah Log Harian
           </button>
+
+          <Link
+            href="/settings"
+            className="btn btn-secondary"
+            style={{ padding: '12px 18px', fontSize: '14px', textDecoration: 'none' }}
+          >
+            ⚙️ Pengaturan
+          </Link>
 
           <button
             onClick={handleLogout}

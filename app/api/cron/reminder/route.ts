@@ -37,10 +37,11 @@ export async function GET(request: Request) {
     const startOfDay = new Date(`${todayStr}T00:00:00.000Z`);
     const endOfDay = new Date(`${todayStr}T23:59:59.999Z`);
 
-    // 3. Query all verified users who have not logged any activity for today
+    // 3. Query all verified users who have opted-in for reminders and have not logged any activity for today
     const usersWithoutLog = await prisma.user.findMany({
       where: {
         emailVerified: true,
+        sendReminders: true,
         logEntries: {
           none: {
             date: {

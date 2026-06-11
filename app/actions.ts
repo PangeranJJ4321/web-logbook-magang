@@ -421,3 +421,80 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
     return { success: false, error: 'Terjadi kesalahan saat memproses permintaan.' };
   }
 }
+
+// 8. Update User Settings
+export async function updateUserSettings(data: {
+  fullName: string;
+  targetHours: number;
+  internshipStart: string;
+  internshipEnd: string;
+  sendReminders: boolean;
+  currentPassword?: string;
+  newPassword?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await getSessionUser();
+    if (!session) {
+      return { success: false, error: 'Sesi kedaluwarsa. Silakan login kembali.' };
+    }
+
+    // 1. Fetch user from DB
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId }
+    });
+
+    if (!user) {
+      return { success: false, error: 'Pengguna tidak ditemukan.' };
+    }
+
+    // 2. Validate dates
+    const startDate = new Date(data.internshipStart);
+    const endDate = new Date(data.internshipEnd);
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return { success: false, error: 'Format tanggal mulai atau selesai tidak valid.' };
+    }
+
+    if (startDate > endDate) {
+      return { success: false, error: 'Tanggal mulai tidak boleh melebihi tanggal selesai.' };
+    }
+
+    // 3. Process password change if requested
+    let updatedPasswordHash = undefined;
+    if (data.newPassword) {
+      if (!data.currentPassword) {
+        return { success: false, error: 'Kata sandi saat ini wajib diisi untuk mengubah kata sandi baru.' };
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(data.currentPassword, user.passwordHash);
+      if (!isPasswordCorrect) {
+        return { success: false, error: 'Kata sandi saat ini salah.' };
+      }
+
+      if (data.newPassword.length < 6) {
+        return { success: false, error: 'Kata sandi baru minimal terdiri dari 6 karakter.' };
+      }
+
+      updatedPasswordHash = await bcrypt.hash(data.newPassword, 10);
+    }
+
+    // 4. Update user profile
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        fullName: data.fullName.trim(),
+        targetHours: Number(data.targetHours),
+        internshipStart: startDate,
+        internshipEnd: endDate,
+        sendReminders: data.sendReminders,
+        ...(updatedPasswordHash ? { passwordHash: updatedPasswordHash } : {}),
+      }
+    });
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (err) {
+    console.error('Error updating user settings:', err);
+    return { success: false, error: 'Terjadi kesalahan saat menyimpan pengaturan.' };
+  }
+}
+

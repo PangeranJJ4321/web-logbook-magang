@@ -46,9 +46,9 @@ Saat ini target total 900 jam dan rentang waktu magang (20 Mei - 20 September 20
 
 Untuk memudahkan pengguna dalam mengelola akun dan preferensi mereka sendiri:
 
-- [ ] **Halaman/Modal Pengaturan (`app/settings/page.tsx` atau Modal)**:
+- [x] **Halaman/Modal Pengaturan (`app/settings/page.tsx` atau Modal)**:
   - Sediakan formulir untuk memperbarui nama lengkap, mengubah kata sandi, dan menyesuaikan target jam serta tanggal magang mereka.
-- [ ] **Pengaturan Preferensi Notifikasi**:
+- [x] **Pengaturan Preferensi Notifikasi**:
   - Tambahkan opsi checkbox (misalnya `sendReminders` boolean di model `User`) agar pengguna dapat memilih untuk menonaktifkan atau mengaktifkan email pengingat harian ke email mereka.
 
 ---
