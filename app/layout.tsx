@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Logbook Magang — 900 Jam Target Tracker",
+    title: "Logbook Magang — Jam Target Tracker",
     description: "Aplikasi pencatatan aktivitas harian magang untuk mahasiswa, siswa SMK, dan peserta internship industri. Lacak progress jam kerja secara akurat dan mudah.",
     images: ["https://logbook-magang.buildwithjj.store/app.webp"],
   },
