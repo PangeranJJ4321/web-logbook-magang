@@ -37,12 +37,6 @@ export const metadata: Metadata = {
         width: 1200,
         height: 600,
         alt: "Logbook Magang Dashboard Preview",
-      },
-      {
-        url: "https://logbook-magang.buildwithjj.store/app2.png",
-        width: 1200,
-        height: 600,
-        alt: "Logbook Magang Secondary Preview",
       }
     ],
     locale: "id_ID",
@@ -53,8 +47,7 @@ export const metadata: Metadata = {
     title: "Logbook Magang — Jam Target Tracker",
     description: "Aplikasi pencatatan aktivitas harian magang untuk mahasiswa, siswa SMK, dan peserta internship industri. Lacak progress jam kerja secara akurat dan mudah.",
     images: [
-      "https://logbook-magang.buildwithjj.store/app.webp",
-      "https://logbook-magang.buildwithjj.store/app2.png"
+      "https://logbook-magang.buildwithjj.store/app.webp"
     ],
   },
   robots: {
