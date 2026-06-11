@@ -5,9 +5,40 @@ import Link from 'next/link';
 
 export default function LandingPage() {
   const [isHovered, setIsHovered] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
     <div style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-overlay">
+          <div className="mobile-menu-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '24px' }}>⏱️</span>
+              <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px' }}>
+                logbook<span style={{ color: 'var(--primary-hover)' }}>.buildwithjj</span>
+              </span>
+            </div>
+            <button 
+              className="mobile-nav-toggle" 
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ fontSize: '28px', padding: '4px' }}
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="mobile-menu-links">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)}>Fitur</a>
+            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Masuk</Link>
+            <Link href="/register" className="btn btn-primary" style={{ padding: '12px', fontSize: '15px', marginTop: '16px' }} onClick={() => setMobileMenuOpen(false)}>
+              Daftar Sekarang
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Slanted Header & Hero Background Wrapper */}
       <div style={{
         background: 'linear-gradient(135deg, rgba(189, 189, 72, 0.16) 0%, rgba(18, 24, 38, 0.95) 100%)',
@@ -34,7 +65,8 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          {/* Desktop Nav */}
+          <nav className="desktop-nav">
             <a href="#features" style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: '600', textDecoration: 'none', transition: 'var(--transition-smooth)' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
@@ -49,6 +81,15 @@ export default function LandingPage() {
               Daftar Sekarang
             </Link>
           </nav>
+
+          {/* Mobile Nav Toggle */}
+          <button 
+            className="mobile-nav-toggle" 
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
         </header>
 
         {/* 2. Hero Section */}
@@ -58,21 +99,10 @@ export default function LandingPage() {
           textAlign: 'center'
         }}>
           <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
-            <h1 style={{
-              fontSize: '48px',
-              fontWeight: '900',
-              lineHeight: '1.15',
-              color: 'var(--text-primary)',
-              letterSpacing: '-1px'
-            }}>
+            <h1 className="hero-title">
               Scheduled execution of your <span style={{ color: 'var(--primary)' }}>magang activities.</span>
             </h1>
-            <p style={{
-              fontSize: '18px',
-              color: 'var(--text-secondary)',
-              maxWidth: '600px',
-              lineHeight: '1.6'
-            }}>
+            <p className="hero-desc">
               Just in time. Track daily tasks, calculate weekly targets, and build your internship profile dynamically. Absolutely free.
             </p>
             <div style={{ marginTop: '12px' }}>
