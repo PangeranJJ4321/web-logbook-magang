@@ -35,7 +35,7 @@ export const metadata: Metadata = {
       {
         url: "https://logbook-magang.buildwithjj.store/app.webp",
         width: 1200,
-        height: 600,
+        height: 630,
         alt: "Logbook Magang Dashboard Preview",
       }
     ],
