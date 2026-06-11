@@ -84,17 +84,17 @@ export async function GET(request: Request) {
           
           <p style="color: #475569; font-size: 16px; line-height: 1.6; text-align: center;">
             Halo! Kami melihat Anda belum mencatat aktivitas magang untuk hari ini:<br/>
-            <strong style="color: #0d9488; font-size: 17px;">${formattedDate}</strong>.
+            <strong style="color: #bdbd48; font-size: 17px;">${formattedDate}</strong>.
           </p>
           
-          <div style="background-color: #f8fafc; border-radius: 8px; padding: 16px; margin: 24px 0; border-left: 4px solid #0d9488;">
+          <div style="background-color: #f8fafc; border-radius: 8px; padding: 16px; margin: 24px 0; border-left: 4px solid #bdbd48;">
             <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.5;">
               Menjaga logbook tetap ter-update akan memudahkan Anda melacak akumulasi target magang sebesar <strong>900 jam</strong>. Yuk, isi aktivitas Anda sekarang agar tidak lupa rincian pekerjaannya!
             </p>
           </div>
           
           <div style="margin: 32px 0; text-align: center;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}" style="background-color: #0d9488; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.2), 0 2px 4px -2px rgba(13, 148, 136, 0.2); transition: background-color 0.2s;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}" style="background-color: #bdbd48; color: #0b0f19; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 6px -1px rgba(189, 189, 72, 0.2), 0 2px 4px -2px rgba(189, 189, 72, 0.2); transition: background-color 0.2s;">
               Isi Logbook Magang
             </a>
           </div>

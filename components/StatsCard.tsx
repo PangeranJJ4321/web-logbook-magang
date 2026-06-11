@@ -101,7 +101,7 @@ export default function StatsCard({ entries }: StatsCardProps) {
               cy={radius}
             />
             <circle
-              stroke="#0d9488"
+              stroke="var(--primary)"
               fill="transparent"
               strokeWidth={strokeWidth}
               strokeDasharray={circumference + ' ' + circumference}

@@ -23,21 +23,21 @@ export default function LogList({ entries, activeWeek, onEdit, onDeleteSuccess }
   // 1. Filter entries belonging to the active week
   const activeWeekEntries = currentWeek
     ? entries.filter(entry => {
-        const entryDate = new Date(`${entry.date}T12:00:00`);
-        const start = new Date(currentWeek.startDate);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(currentWeek.endDate);
-        end.setHours(23, 59, 59, 999);
+      const entryDate = new Date(`${entry.date}T12:00:00`);
+      const start = new Date(currentWeek.startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(currentWeek.endDate);
+      end.setHours(23, 59, 59, 999);
 
-        return entryDate >= start && entryDate <= end;
-      })
+      return entryDate >= start && entryDate <= end;
+    })
     : [];
 
   // 2. Apply search and category filters
   const filteredEntries = activeWeekEntries.filter(entry => {
     const matchesSearch = entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          entry.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          entry.documentation.toLowerCase().includes(searchTerm.toLowerCase());
+      entry.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      entry.documentation.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'All' || entry.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -93,7 +93,7 @@ export default function LogList({ entries, activeWeek, onEdit, onDeleteSuccess }
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    
+
     link.setAttribute('href', url);
     link.setAttribute('download', `logbook_magang_minggu_${activeWeek}.csv`);
     document.body.appendChild(link);
@@ -107,7 +107,7 @@ export default function LogList({ entries, activeWeek, onEdit, onDeleteSuccess }
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h2 style={{ fontSize: '18px', fontWeight: '700' }}>
-            📅 Rincian Aktivitas — Minggu {activeWeek}
+            Rincian Aktivitas — Minggu {activeWeek}
           </h2>
           {currentWeek && (
             <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '2px' }}>
@@ -284,7 +284,6 @@ export default function LogList({ entries, activeWeek, onEdit, onDeleteSuccess }
             alignItems: 'center',
             gap: '8px'
           }}>
-            <span style={{ fontSize: '32px' }}>📭</span>
             <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Tidak ada data ditemukan</strong>
             <p style={{ fontSize: '12px', maxWidth: '320px', margin: '0 auto' }}>
               {activeWeekEntries.length > 0

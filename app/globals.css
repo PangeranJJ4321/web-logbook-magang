@@ -6,14 +6,14 @@
   --bg-secondary: #121826;
   --bg-card: #121826;
   --border-color: rgba(255, 255, 255, 0.1);
-  --border-focus: #14b8a6;
+  --border-focus: #cacc54;
   
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --primary: #0d9488;
-  --primary-hover: #14b8a6;
+  --primary: #bdbd48;
+  --primary-hover: #cacc54;
   
   --success: #10b981;
   --danger: #f43f5e;
@@ -86,7 +86,7 @@ html, body {
 
 .btn-primary {
   background: var(--primary);
-  color: #ffffff;
+  color: #0b0f19;
 }
 .btn-primary:hover {
   background: var(--primary-hover);
