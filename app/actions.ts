@@ -340,3 +340,82 @@ export async function saveWeeklyReview(weekIndex: number, text: string): Promise
     return { success: false, error: 'Gagal menyimpan catatan mingguan' };
   }
 }
+
+// 7. Resend Verification Email
+export async function resendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const formattedEmail = email.toLowerCase().trim();
+    
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: formattedEmail },
+    });
+
+    if (!user) {
+      return { success: false, error: 'Email tidak terdaftar.' };
+    }
+
+    if (user.emailVerified) {
+      return { success: false, error: 'Email sudah terkonfirmasi, silakan langsung login.' };
+    }
+
+    // Generate secure random verification token
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+    // Update user in DB with new verification token and expiry
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        verificationToken: token,
+        verificationTokenExpires: tokenExpires,
+      },
+    });
+
+    // Send email confirmation link with token parameter
+    const confirmUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/auth/confirm?token=${token}`;
+
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: emailConfig.from,
+          to: formattedEmail,
+          subject: '📧 Konfirmasi Akun Logbook Magang Anda',
+          html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <span style="font-size: 48px;">📧</span>
+              </div>
+              <h2 style="color: #0f172a; text-align: center; margin-top: 0; font-size: 22px; font-weight: 700;">Konfirmasi Email Anda</h2>
+              
+              <p style="color: #475569; font-size: 16px; line-height: 1.6; text-align: center;">
+                Halo <strong>${user.fullName}</strong>!<br/>
+                Silakan klik tombol di bawah ini untuk mengonfirmasi email Anda dan mengaktifkan akun Anda:
+              </p>
+              
+              <div style="margin: 32px 0; text-align: center;">
+                <a href="${confirmUrl}" style="background-color: #bdbd48; color: #0b0f19; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 6px -1px rgba(189, 189, 72, 0.2), 0 2px 4px -2px rgba(189, 189, 72, 0.2); transition: background-color 0.2s;">
+                  Konfirmasi Email
+                </a>
+              </div>
+              
+              <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
+              <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+                Jika Anda tidak merasa mendaftar di aplikasi ini, silakan abaikan email ini.
+              </p>
+            </div>
+          `
+        });
+      } catch (emailErr) {
+        console.error('Error resending confirmation email via Resend:', emailErr);
+      }
+    } else {
+      console.warn('Resend is not configured. Email confirmation link is:', confirmUrl);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error resending verification email:', error);
+    return { success: false, error: 'Terjadi kesalahan saat memproses permintaan.' };
+  }
+}

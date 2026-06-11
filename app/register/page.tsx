@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { registerUser } from '@/app/actions';
+import { registerUser, resendVerificationEmail } from '@/app/actions';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -11,11 +11,49 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+  
+  const router = useRouter();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldown > 0) {
+      timer = setTimeout(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [cooldown]);
+
+  const handleResendEmail = async () => {
+    if (cooldown > 0 || isResending) return;
+    setIsResending(true);
+    setResendMessage(null);
+    setResendError(null);
+
+    try {
+      const result = await resendVerificationEmail(email);
+      if (result.success) {
+        setResendMessage('✓ Email konfirmasi baru berhasil dikirim!');
+        setCooldown(60);
+      } else {
+        setResendError(result.error || 'Gagal mengirim ulang email.');
+      }
+    } catch (err) {
+      setResendError('Terjadi kesalahan koneksi.');
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
-  
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +112,49 @@ export default function RegisterPage() {
             Kami telah mengirimkan email konfirmasi ke <strong style={{ color: 'var(--primary)' }}>{email}</strong>. 
             Silakan buka kotak masuk email Anda dan klik tombol konfirmasi untuk mengaktifkan akun Anda.
           </p>
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginTop: '8px' }}>
+          
+          {resendMessage && (
+            <div style={{
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              color: 'var(--success)',
+              padding: '10px',
+              fontSize: '13px',
+              fontWeight: '500',
+              marginTop: '4px',
+              textAlign: 'center'
+            }}>
+              {resendMessage}
+            </div>
+          )}
+
+          {resendError && (
+            <div style={{
+              backgroundColor: 'rgba(244, 63, 94, 0.12)',
+              border: '1px solid rgba(244, 63, 94, 0.25)',
+              color: 'var(--danger)',
+              padding: '10px',
+              fontSize: '13px',
+              fontWeight: '500',
+              marginTop: '4px',
+              textAlign: 'center'
+            }}>
+              ⚠️ {resendError}
+            </div>
+          )}
+
+          <div style={{ marginTop: '12px' }}>
+            <button
+              onClick={handleResendEmail}
+              disabled={isResending || cooldown > 0}
+              className="btn btn-secondary"
+              style={{ padding: '10px 16px', fontSize: '13px', width: '100%' }}
+            >
+              {isResending ? 'Mengirim...' : cooldown > 0 ? `Kirim Ulang dalam ${cooldown}s` : 'Kirim Ulang Email Konfirmasi'}
+            </button>
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginTop: '12px' }}>
             <Link href="/login" style={{ color: 'var(--primary-hover)', fontWeight: '600', textDecoration: 'underline' }}>
               Kembali ke Login
             </Link>

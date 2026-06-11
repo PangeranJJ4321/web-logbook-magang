@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { loginUser } from '@/app/actions';
+import { loginUser, resendVerificationEmail } from '@/app/actions';
 
 function LoginFormContent() {
   const [email, setEmail] = useState('');
@@ -12,9 +12,50 @@ function LoginFormContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const confirmed = searchParams.get('confirmed') === 'true';
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldown > 0) {
+      timer = setTimeout(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [cooldown]);
+
+  const handleResendEmail = async () => {
+    if (!email.trim()) {
+      setResendError('Silakan masukkan alamat email Anda terlebih dahulu.');
+      return;
+    }
+    setIsResending(true);
+    setResendMessage(null);
+    setResendError(null);
+
+    try {
+      const result = await resendVerificationEmail(email);
+      if (result.success) {
+        setResendMessage('✓ Email konfirmasi baru berhasil dikirim!');
+        setCooldown(60);
+      } else {
+        setResendError(result.error || 'Gagal mengirim ulang email.');
+      }
+    } catch (err) {
+      setResendError('Terjadi kesalahan koneksi.');
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +115,20 @@ function LoginFormContent() {
           </div>
         )}
 
-        {error && (
+        {resendMessage && (
+          <div style={{
+            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
+            color: 'var(--success)',
+            padding: '12px',
+            fontSize: '13px',
+            fontWeight: '500'
+          }}>
+            {resendMessage}
+          </div>
+        )}
+
+        {resendError && (
           <div style={{
             backgroundColor: 'rgba(244, 63, 94, 0.12)',
             border: '1px solid rgba(244, 63, 94, 0.25)',
@@ -83,7 +137,44 @@ function LoginFormContent() {
             fontSize: '13px',
             fontWeight: '500'
           }}>
-            ⚠️ {error}
+            ⚠️ {resendError}
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            backgroundColor: 'rgba(244, 63, 94, 0.12)',
+            border: '1px solid rgba(244, 63, 94, 0.25)',
+            color: 'var(--danger)',
+            padding: '12px',
+            fontSize: '13px',
+            fontWeight: '500',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            <span>⚠️ {error}</span>
+            {error.includes('belum dikonfirmasi') && (
+              <button
+                type="button"
+                onClick={handleResendEmail}
+                disabled={isResending || cooldown > 0}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--primary-hover)',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  textAlign: 'left',
+                  padding: '0',
+                  alignSelf: 'flex-start'
+                }}
+              >
+                {isResending ? 'Mengirim ulang...' : cooldown > 0 ? `Kirim ulang dalam ${cooldown}s` : 'Kirim Ulang Email Konfirmasi'}
+              </button>
+            )}
           </div>
         )}
 
