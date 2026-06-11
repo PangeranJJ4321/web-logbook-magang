@@ -8,15 +8,15 @@ Dokumen ini memuat daftar tugas dan pengembangan fitur yang belum diselesaikan a
 
 Saat ini, modul notifikasi (`app/api/cron/reminder/route.ts`) masih menggunakan pendekatan single-user statis. Agar mendukung multi-user dengan benar, langkah-langkah berikut perlu diimplementasikan:
 
-- [ ] **Scoping Kueri per Pengguna**:
+- [x] **Scoping Kueri per Pengguna**:
   - Ubah logika pencarian dari memeriksa apakah ada *satu pun* aktivitas di database menjadi mengiterasi seluruh pengguna terdaftar (`User`).
   - Untuk setiap pengguna, periksa apakah mereka memiliki `LogEntry` pada hari berjalan.
-- [ ] **Dinamisasi Alamat Penerima Email**:
+- [x] **Dinamisasi Alamat Penerima Email**:
   - Ganti pengiriman statis ke `EMAIL_TO` (dari `.env`) dengan mengirim langsung ke email masing-masing pengguna (`user.email`) yang belum mengisi logbook.
-- [ ] **Setup API Key Resend Resmi**:
+- [x] **Setup API Key Resend Resmi**:
   - Daftarkan domain pengirim di akun Resend untuk menggantikan `onboarding@resend.dev` agar email dapat dikirim ke alamat email selain akun sandbox pemilik Resend.
   - Perbarui `RESEND_API_KEY` dan `EMAIL_FROM` di `.env` produksi.
-- [ ] **Konfigurasi Trigger Cron Job**:
+- [x] **Konfigurasi Trigger Cron Job**:
   - Hubungkan endpoint `/api/cron/reminder?secret=CRON_SECRET` ke scheduler otomatis (misalnya Vercel Cron Job, GitHub Actions Cron, atau EasyCron) agar terpanggil sekali sehari (misalnya setiap jam 18:00 atau 20:00 WIB).
 
 ---
