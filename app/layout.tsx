@@ -8,6 +8,19 @@ export const metadata: Metadata = {
     template: "%s | Logbook Magang"
   },
   description: "Aplikasi pencatatan aktivitas magang harian untuk melacak progress target 900 jam kerja secara akurat dan mudah.",
+  keywords: [
+    "logbook magang",
+    "900 jam magang",
+    "target jam kerja magang",
+    "tracker magang harian",
+    "weekly report magang",
+    "jurnal harian magang",
+    "internship tracker",
+    "buildwithjj"
+  ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Logbook Magang — 900 Jam Target Tracker",
     description: "Catat aktivitas harian, pantau persentase pencapaian jam magang, dan ekspor laporan mingguan secara instan.",
@@ -33,6 +46,9 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  verification: {
+    google: "google-site-verification-placeholder",
   }
 };
 
