@@ -26,12 +26,12 @@ async function getSessionUser() {
 export async function registerUser(fullName: string, email: string, password: string): Promise<{ success: boolean; needsConfirmation?: boolean; error?: string }> {
   try {
     const formattedEmail = email.toLowerCase().trim();
-    
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: formattedEmail },
     });
-    
+
     if (existingUser) {
       return { success: false, error: 'Email sudah terdaftar' };
     }
@@ -68,12 +68,9 @@ export async function registerUser(fullName: string, email: string, password: st
         await resend.emails.send({
           from: emailConfig.from,
           to: formattedEmail,
-          subject: '📧 Konfirmasi Akun Logbook Magang Anda',
+          subject: 'Konfirmasi Akun Logbook Magang Anda',
           html: `
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
-              <div style="text-align: center; margin-bottom: 24px;">
-                <span style="font-size: 48px;">📧</span>
-              </div>
               <h2 style="color: #0f172a; text-align: center; margin-top: 0; font-size: 22px; font-weight: 700;">Konfirmasi Email Anda</h2>
               
               <p style="color: #475569; font-size: 16px; line-height: 1.6; text-align: center;">
@@ -112,7 +109,7 @@ export async function registerUser(fullName: string, email: string, password: st
 export async function loginUser(email: string, password: string): Promise<{ success: boolean; error?: string }> {
   try {
     const formattedEmail = email.toLowerCase().trim();
-    
+
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email: formattedEmail },
@@ -254,9 +251,9 @@ export async function updateLogEntry(id: string, input: LogEntryInput): Promise<
 
     // Guard update with userId check
     await prisma.logEntry.update({
-      where: { 
+      where: {
         id,
-        userId: session.userId 
+        userId: session.userId
       },
       data: {
         title: input.title,
@@ -286,7 +283,7 @@ export async function deleteLogEntry(id: string): Promise<{ success: boolean; er
 
     // Guard delete with userId check
     await prisma.logEntry.delete({
-      where: { 
+      where: {
         id,
         userId: session.userId
       },
@@ -350,7 +347,7 @@ export async function saveWeeklyReview(weekIndex: number, text: string): Promise
 export async function resendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
   try {
     const formattedEmail = email.toLowerCase().trim();
-    
+
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email: formattedEmail },
@@ -385,11 +382,11 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
         await resend.emails.send({
           from: emailConfig.from,
           to: formattedEmail,
-          subject: '📧 Konfirmasi Akun Logbook Magang Anda',
+          subject: ' Konfirmasi Akun Logbook Magang Anda',
           html: `
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
               <div style="text-align: center; margin-bottom: 24px;">
-                <span style="font-size: 48px;">📧</span>
+                <span style="font-size: 48px;"></span>
               </div>
               <h2 style="color: #0f172a; text-align: center; margin-top: 0; font-size: 22px; font-weight: 700;">Konfirmasi Email Anda</h2>
               
