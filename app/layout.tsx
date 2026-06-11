@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Logbook Magang — 900 Jam Target Tracker",
+    title: "Logbook Magang — Jam Target Tracker",
     description: "Aplikasi pencatatan aktivitas harian magang untuk mahasiswa, siswa SMK, dan peserta internship industri. Lacak progress jam kerja secara akurat dan mudah.",
     url: "https://logbook-magang.buildwithjj.store",
     siteName: "Logbook Magang",
