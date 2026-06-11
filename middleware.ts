@@ -15,14 +15,15 @@ export async function middleware(request: NextRequest) {
 
   const isAuthPage = path === '/login' || path === '/register';
   const isApiRoute = path.startsWith('/api/');
+  const isRootPath = path === '/';
 
-  // If it's an API route, let it pass through (auth is handled inside the APIs or Server Actions)
-  if (isApiRoute) {
+  // If it's an API route or the root path, let it pass through
+  if (isApiRoute || isRootPath) {
     return NextResponse.next();
   }
 
   // 1. If not authenticated, and trying to access app pages -> Redirect to /login
-  if (!userSession && !isAuthPage) {
+  if (!userSession && !isAuthPage && !isRootPath) {
     const response = NextResponse.redirect(new URL('/login', request.url));
     // Clear invalid/stale token if present
     if (token) {

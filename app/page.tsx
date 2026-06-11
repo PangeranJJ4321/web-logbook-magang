@@ -1,6 +1,7 @@
 import React from 'react';
 import { getAllLogEntries, getAllWeeklyReviews } from './actions';
 import DashboardWrapper from '@/components/DashboardWrapper';
+import LandingPage from '@/components/LandingPage';
 import { cookies } from 'next/headers';
 import { verifyJWT } from '@/utils/auth';
 import { redirect } from 'next/navigation';
@@ -15,12 +16,12 @@ export default async function Home() {
   const token = cookieStore.get('auth_token')?.value;
   
   if (!token) {
-    redirect('/login');
+    return <LandingPage />;
   }
 
   const user = await verifyJWT(token);
   if (!user) {
-    redirect('/login');
+    return <LandingPage />;
   }
 
   // Fetch complete user profile from database
