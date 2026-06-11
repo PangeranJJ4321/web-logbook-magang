@@ -1,50 +1,50 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  passwordHash  String
-  fullName      String
-  createdAt       DateTime       @default(now())
-  targetHours     Float          @default(900.0)
-  internshipStart DateTime       @default("2026-05-20T00:00:00.000Z")
-  internshipEnd   DateTime       @default("2026-09-20T23:59:59.999Z")
-  emailVerified            Boolean            @default(false)
-  verificationToken        String?            @unique
+  id                       String         @id @default(uuid())
+  email                    String         @unique
+  passwordHash             String
+  fullName                 String
+  createdAt                DateTime       @default(now())
+  targetHours              Float          @default(900.0)
+  internshipStart          DateTime       @default(dbgenerated("'2026-05-20 00:00:00'::timestamp without time zone"))
+  internshipEnd            DateTime       @default(dbgenerated("'2026-09-20 23:59:59.999'::timestamp without time zone"))
+  emailVerified            Boolean        @default(false)
+  verificationToken        String?        @unique
   verificationTokenExpires DateTime?
-  sendReminders            Boolean            @default(true)
+  sendReminders            Boolean        @default(true)
   logEntries               LogEntry[]
-  weeklyReviews WeeklyReview[]
+  weeklyReviews            WeeklyReview[]
 }
 
 model LogEntry {
   id            String   @id @default(uuid())
-  userId        String   // Foreign key linking to User
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title         String   // Judul aktivitas
-  date          DateTime // Tanggal
-  startTime     String   // Jam mulai (format "HH:MM")
-  endTime       String   // Jam selesai (format "HH:MM")
-  durationHours Float    // Durasi jam (desimal)
-  category      String   // Kategori (e.g., Coding, Meeting, UI/UX, dll)
-  details       String   // Detail aktivitas (Catatan)
-  documentation String   // Dokumentasi link
+  userId        String
+  title         String
+  date          DateTime
+  startTime     String
+  endTime       String
+  durationHours Float
+  category      String
+  details       String
+  documentation String
   createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WeeklyReview {
-  id            String   @id @default(uuid())
-  userId        String   // Foreign key linking to User
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weekIndex     Int      // Indeks Minggu (1-18)
-  summaryText   String   // Catatan evaluasi/summary mingguan
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(uuid())
+  userId      String
+  weekIndex   Int
+  summaryText String
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, weekIndex]) // A user has exactly one review per week
+  @@unique([userId, weekIndex])
 }
