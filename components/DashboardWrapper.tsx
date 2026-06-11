@@ -118,7 +118,7 @@ export default function DashboardWrapper({
             className="btn btn-secondary"
             style={{ padding: '12px 18px', fontSize: '14px', textDecoration: 'none' }}
           >
-            ⚙️ Pengaturan
+            Pengaturan
           </Link>
 
           <button

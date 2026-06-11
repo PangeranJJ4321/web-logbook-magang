@@ -117,7 +117,7 @@ export default function SettingsForm({ initialData }: SettingsFormProps) {
       {/* Header Area */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '800' }}>⚙️ Pengaturan Profil</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: '800' }}>Pengaturan Profil</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
             Sesuaikan detail profil magang dan keamanan akun Anda
           </p>
