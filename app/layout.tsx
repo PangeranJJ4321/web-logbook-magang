@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://logbook-magang.buildwithjj.store"),
   title: {
-    default: "Logbook Magang — 900 Jam Target Tracker",
+    default: "Logbook Magang — Jam Target Tracker",
     template: "%s | Logbook Magang"
   },
   description: "Aplikasi pencatatan aktivitas harian magang untuk mahasiswa, siswa SMK, dan peserta internship industri. Lacak progress jam kerja secara akurat dan mudah.",

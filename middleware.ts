@@ -16,9 +16,10 @@ export async function middleware(request: NextRequest) {
   const isAuthPage = path === '/login' || path === '/register';
   const isApiRoute = path.startsWith('/api/');
   const isRootPath = path === '/';
+  const isStaticFile = path.includes('.') || path.startsWith('/_next/');
 
-  // If it's an API route or the root path, let it pass through
-  if (isApiRoute || isRootPath) {
+  // If it's a static file, API route, or the root path, let it pass through
+  if (isStaticFile || isApiRoute || isRootPath) {
     return NextResponse.next();
   }
 
@@ -50,8 +51,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (Next.js image optimization)
      * - favicon.ico (favicon file)
-     * - public files (images, next.svg, etc)
+     * - static files (images, sitemap.xml, robots.txt, etc.)
      */
-    '/((?!api/cron/reminder|api/auth/confirm|_next/static|_next/image|favicon.ico|next.svg|vercel.svg).*)',
+    '/((?!api/cron/reminder|api/auth/confirm|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|xml|txt)$).*)',
   ],
 };
