@@ -4,6 +4,8 @@ import DashboardWrapper from '@/components/DashboardWrapper';
 import { cookies } from 'next/headers';
 import { verifyJWT } from '@/utils/auth';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/utils/prisma';
+import { toISODateString } from '@/utils/dateHelpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +23,21 @@ export default async function Home() {
     redirect('/login');
   }
 
+  // Fetch complete user profile from database
+  const userProfile = await prisma.user.findUnique({
+    where: { id: user.userId },
+    select: {
+      fullName: true,
+      targetHours: true,
+      internshipStart: true,
+      internshipEnd: true,
+    }
+  });
+
+  if (!userProfile) {
+    redirect('/login');
+  }
+
   // 2. Fetch entries and reviews (automatically scoped to the user session inside Server Actions)
   const [entries, reviews] = await Promise.all([
     getAllLogEntries(),
@@ -32,7 +49,10 @@ export default async function Home() {
       <DashboardWrapper
         initialEntries={entries}
         initialReviews={reviews}
-        userFullName={user.fullName}
+        userFullName={userProfile.fullName}
+        targetHours={userProfile.targetHours}
+        internshipStart={toISODateString(userProfile.internshipStart)}
+        internshipEnd={toISODateString(userProfile.internshipEnd)}
       />
     </main>
   );

@@ -11,8 +11,14 @@ model User {
   email         String         @unique
   passwordHash  String
   fullName      String
-  createdAt     DateTime       @default(now())
-  logEntries    LogEntry[]
+  createdAt       DateTime       @default(now())
+  targetHours     Float          @default(900.0)
+  internshipStart DateTime       @default("2026-05-20T00:00:00.000Z")
+  internshipEnd   DateTime       @default("2026-09-20T23:59:59.999Z")
+  emailVerified            Boolean            @default(false)
+  verificationToken        String?            @unique
+  verificationTokenExpires DateTime?
+  logEntries               LogEntry[]
   weeklyReviews WeeklyReview[]
 }
 

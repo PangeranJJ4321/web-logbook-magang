@@ -10,14 +10,23 @@ interface LogListProps {
   activeWeek: number;
   onEdit: (entry: LogEntry) => void;
   onDeleteSuccess: () => void;
+  internshipStart: string;
+  internshipEnd: string;
 }
 
-export default function LogList({ entries, activeWeek, onEdit, onDeleteSuccess }: LogListProps) {
+export default function LogList({
+  entries,
+  activeWeek,
+  onEdit,
+  onDeleteSuccess,
+  internshipStart,
+  internshipEnd,
+}: LogListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-  const weeks = getWeeksList();
+  const weeks = getWeeksList(internshipStart, internshipEnd);
   const currentWeek = weeks.find(w => w.weekIndex === activeWeek);
 
   // 1. Filter entries belonging to the active week

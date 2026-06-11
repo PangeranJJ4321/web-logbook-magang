@@ -13,6 +13,7 @@ export default function RegisterPage() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
   
   const router = useRouter();
 
@@ -43,10 +44,7 @@ export default function RegisterPage() {
     try {
       const result = await registerUser(fullName, email, password);
       if (result.success) {
-        // Redirection to dashboard is handled automatically by Next.js revalidation/middleware, 
-        // but we push path refresh to make sure it loads.
-        router.push('/');
-        router.refresh();
+        setShowConfirmationMessage(true);
       } else {
         setError(result.error || 'Registrasi gagal. Coba lagi.');
       }
@@ -56,6 +54,35 @@ export default function RegisterPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (showConfirmationMessage) {
+    return (
+      <div style={{
+        display: 'flex',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        backgroundColor: 'var(--bg-primary)'
+      }}>
+        <div className="glass-card" style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center' }}>
+          <div>
+            <span style={{ fontSize: '48px' }}>✉️</span>
+          </div>
+          <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>Registrasi Berhasil!</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', margin: '8px 0' }}>
+            Kami telah mengirimkan email konfirmasi ke <strong style={{ color: 'var(--primary)' }}>{email}</strong>. 
+            Silakan buka kotak masuk email Anda dan klik tombol konfirmasi untuk mengaktifkan akun Anda.
+          </p>
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginTop: '8px' }}>
+            <Link href="/login" style={{ color: 'var(--primary-hover)', fontWeight: '600', textDecoration: 'underline' }}>
+              Kembali ke Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{

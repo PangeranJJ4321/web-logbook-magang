@@ -25,7 +25,7 @@ Saat ini, modul notifikasi (`app/api/cron/reminder/route.ts`) masih menggunakan 
 
 Saat ini target total 900 jam dan rentang waktu magang (20 Mei - 20 September 2026) masih di-hardcode di file utilitas global. Agar aplikasi dapat digunakan oleh siswa dari sekolah/instansi lain dengan target yang berbeda:
 
-- [ ] **Pembaruan Schema Database (`prisma/schema.prisma`)**:
+- [x] **Pembaruan Schema Database (`prisma/schema.prisma`)**:
   - Tambahkan kolom berikut ke model `User`:
     ```prisma
     model User {
@@ -35,9 +35,9 @@ Saat ini target total 900 jam dan rentang waktu magang (20 Mei - 20 September 20
       internshipEnd   DateTime @default("2026-09-20T23:59:59Z")
     }
     ```
-- [ ] **Penyesuaian Helper Tanggal (`utils/dateHelpers.ts`)**:
+- [x] **Penyesuaian Helper Tanggal (`utils/dateHelpers.ts`)**:
   - Ubah fungsi penghitungan agar menerima parameter tanggal mulai, tanggal selesai, dan target jam dari database daripada merujuk ke konstanta global.
-- [ ] **Dinamisasi Halaman Dashboard**:
+- [x] **Dinamisasi Halaman Dashboard**:
   - Ambil informasi target dan rentang tanggal milik pengguna yang sedang login di `app/page.tsx`, lalu kirimkan prop tersebut ke komponen `StatsCard` dan `WeeklyOverview`.
 
 ---
@@ -55,5 +55,5 @@ Untuk memudahkan pengguna dalam mengelola akun dan preferensi mereka sendiri:
 
 ## 4. Validasi Durasi Harian
 
-- [ ] **Pencegahan Input Jam yang Tidak Valid**:
+- [x] **Pencegahan Input Jam yang Tidak Valid**:
   - Tambahkan validasi pada `LogEntryForm` agar pengguna tidak bisa memasukkan waktu selesai yang mendahului waktu mulai (misalnya mulai 09:00, selesai 08:00) atau total jam yang melebihi batas wajar (misalnya >16 jam per hari).

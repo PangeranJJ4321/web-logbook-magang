@@ -7,6 +7,8 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 import { signJWT, verifyJWT } from '@/utils/auth';
+import { resend, emailConfig } from '@/utils/resend';
+import crypto from 'crypto';
 
 // Helper to extract session payload
 async function getSessionUser() {
@@ -21,7 +23,7 @@ async function getSessionUser() {
 // ==========================================
 
 // 1. User Registration
-export async function registerUser(fullName: string, email: string, password: string): Promise<{ success: boolean; error?: string }> {
+export async function registerUser(fullName: string, email: string, password: string): Promise<{ success: boolean; needsConfirmation?: boolean; error?: string }> {
   try {
     const formattedEmail = email.toLowerCase().trim();
     
@@ -37,32 +39,64 @@ export async function registerUser(fullName: string, email: string, password: st
     // Hash the password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user in DB
+    // Generate secure random verification token
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+    // Create user in DB with emailVerified false and verification token
     const user = await prisma.user.create({
       data: {
         fullName,
         email: formattedEmail,
         passwordHash,
+        emailVerified: false,
+        verificationToken: token,
+        verificationTokenExpires: tokenExpires,
       },
     });
 
-    // Sign JWT and set HTTP-only cookie
-    const token = await signJWT({
-      userId: user.id,
-      email: user.email,
-      fullName: user.fullName,
-    });
+    // Send email confirmation link with token parameter
+    const confirmUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/auth/confirm?token=${token}`;
 
-    const cookieStore = await cookies();
-    cookieStore.set('auth_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    });
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: emailConfig.from,
+          to: formattedEmail,
+          subject: '📧 Konfirmasi Akun Logbook Magang Anda',
+          html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <span style="font-size: 48px;">📧</span>
+              </div>
+              <h2 style="color: #0f172a; text-align: center; margin-top: 0; font-size: 22px; font-weight: 700;">Konfirmasi Email Anda</h2>
+              
+              <p style="color: #475569; font-size: 16px; line-height: 1.6; text-align: center;">
+                Halo <strong>${fullName}</strong>!<br/>
+                Terima kasih telah mendaftar di Sistem Logbook Magang. Silakan klik tombol di bawah ini untuk mengonfirmasi email Anda dan mengaktifkan akun Anda:
+              </p>
+              
+              <div style="margin: 32px 0; text-align: center;">
+                <a href="${confirmUrl}" style="background-color: #bdbd48; color: #0b0f19; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; box-shadow: 0 4px 6px -1px rgba(189, 189, 72, 0.2), 0 2px 4px -2px rgba(189, 189, 72, 0.2); transition: background-color 0.2s;">
+                  Konfirmasi Email
+                </a>
+              </div>
+              
+              <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
+              <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+                Jika Anda tidak merasa mendaftar di aplikasi ini, silakan abaikan email ini.
+              </p>
+            </div>
+          `
+        });
+      } catch (emailErr) {
+        console.error('Error sending confirmation email via Resend:', emailErr);
+      }
+    } else {
+      console.warn('Resend is not configured. Email confirmation link is:', confirmUrl);
+    }
 
-    return { success: true };
+    return { success: true, needsConfirmation: true };
   } catch (error) {
     console.error('Error registering user:', error);
     return { success: false, error: 'Terjadi kesalahan saat registrasi' };
@@ -87,6 +121,11 @@ export async function loginUser(email: string, password: string): Promise<{ succ
     const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordCorrect) {
       return { success: false, error: 'Email atau password salah' };
+    }
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      return { success: false, error: 'Email belum dikonfirmasi. Silakan periksa email Anda untuk melakukan konfirmasi.' };
     }
 
     // Sign JWT and set cookie

@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { loginUser } from '@/app/actions';
 
-export default function LoginPage() {
+function LoginFormContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const confirmed = searchParams.get('confirmed') === 'true';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +59,20 @@ export default function LoginPage() {
             Masuk untuk mengakses dan mencatat aktivitas magang Anda
           </p>
         </div>
+
+        {confirmed && (
+          <div style={{
+            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
+            color: 'var(--success)',
+            padding: '12px',
+            fontSize: '13px',
+            fontWeight: '500',
+            borderRadius: '0'
+          }}>
+            ✓ Email berhasil dikonfirmasi! Silakan masuk ke akun Anda.
+          </div>
+        )}
 
         {error && (
           <div style={{
@@ -121,5 +137,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', color: 'var(--text-secondary)', fontSize: '14px' }}>
+        Memuat...
+      </div>
+    }>
+      <LoginFormContent />
+    </Suspense>
   );
 }

@@ -8,21 +8,33 @@ export interface WeekRange {
   label: string;
 }
 
-// Generates the list of 18 weeks for the internship period (May 20 - Sept 20, 2026)
-export function getWeeksList(): WeekRange[] {
-  const weeks: WeekRange[] = [];
-  const start = new Date(INTERNSHIP_START);
+// Generates the list of weeks dynamically for the internship period
+export function getWeeksList(startInput?: Date | string, endInput?: Date | string): WeekRange[] {
+  const start = startInput ? new Date(startInput) : INTERNSHIP_START;
+  const end = endInput ? new Date(endInput) : INTERNSHIP_END;
 
-  for (let i = 1; i <= 18; i++) {
-    const weekStart = new Date(start);
-    weekStart.setDate(start.getDate() + (i - 1) * 7);
+  // Normalize start to midnight, end to end-of-day
+  const s = new Date(start);
+  s.setHours(0, 0, 0, 0);
+  const e = new Date(end);
+  e.setHours(23, 59, 59, 999);
+
+  const diffTime = e.getTime() - s.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const totalWeeks = Math.max(Math.ceil(diffDays / 7), 1);
+
+  const weeks: WeekRange[] = [];
+
+  for (let i = 1; i <= totalWeeks; i++) {
+    const weekStart = new Date(s);
+    weekStart.setDate(s.getDate() + (i - 1) * 7);
     
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
     weekEnd.setHours(23, 59, 59, 999);
 
-    // Caps the last week at Sept 20, 2026
-    const actualEnd = weekEnd > INTERNSHIP_END ? new Date(INTERNSHIP_END) : weekEnd;
+    // Caps the last week at the dynamic end date
+    const actualEnd = weekEnd > e ? new Date(e) : weekEnd;
 
     // Formatting label in Indonesian
     const startStr = formatDateShort(weekStart);
@@ -38,22 +50,38 @@ export function getWeeksList(): WeekRange[] {
   return weeks;
 }
 
-// Returns the week index (1-18) for a given date. Returns -1 if outside internship range.
-export function getWeekIndexForDate(dateInput: Date | string): number {
+// Returns the week index (1-N) for a given date based on dynamic start/end ranges.
+export function getWeekIndexForDate(
+  dateInput: Date | string,
+  startInput?: Date | string,
+  endInput?: Date | string
+): number {
+  const start = startInput ? new Date(startInput) : INTERNSHIP_START;
+  const end = endInput ? new Date(endInput) : INTERNSHIP_END;
+
   const date = new Date(dateInput);
   date.setHours(12, 0, 0, 0); // avoid timezone boundary errors
   
-  if (date < INTERNSHIP_START || date > INTERNSHIP_END) {
-    // If it's slightly before start or after end, clamp to nearest week if user chooses to log
-    if (date < INTERNSHIP_START) return 1;
-    if (date > INTERNSHIP_END) return 18;
+  const s = new Date(start);
+  s.setHours(0, 0, 0, 0);
+  const e = new Date(end);
+  e.setHours(23, 59, 59, 999);
+
+  const diffTimeTotal = e.getTime() - s.getTime();
+  const diffDaysTotal = Math.ceil(diffTimeTotal / (1000 * 60 * 60 * 24));
+  const totalWeeks = Math.max(Math.ceil(diffDaysTotal / 7), 1);
+  
+  if (date < s || date > e) {
+    // If it's slightly before start or after end, clamp to nearest week
+    if (date < s) return 1;
+    if (date > e) return totalWeeks;
   }
 
-  const diffTime = date.getTime() - INTERNSHIP_START.getTime();
+  const diffTime = date.getTime() - s.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   const weekIndex = Math.floor(diffDays / 7) + 1;
 
-  return Math.min(Math.max(weekIndex, 1), 18);
+  return Math.min(Math.max(weekIndex, 1), totalWeeks);
 }
 
 // Formats "2026-05-20" or Date object to Indonesian formatted date (e.g. "Rabu, 20 Mei 2026")

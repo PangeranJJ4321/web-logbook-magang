@@ -10,6 +10,9 @@ interface WeeklyOverviewProps {
   reviews: WeeklyReview[];
   activeWeek: number;
   setActiveWeek: (week: number) => void;
+  targetHours: number;
+  internshipStart: string;
+  internshipEnd: string;
 }
 
 export default function WeeklyOverview({
@@ -17,9 +20,12 @@ export default function WeeklyOverview({
   reviews,
   activeWeek,
   setActiveWeek,
+  targetHours,
+  internshipStart,
+  internshipEnd,
 }: WeeklyOverviewProps) {
-  const weeks = getWeeksList();
-  const weeklyTarget = 50; // 900 hours / 18 weeks = 50 hours/week average
+  const weeks = getWeeksList(internshipStart, internshipEnd);
+  const weeklyTarget = weeks.length > 0 ? Number((targetHours / weeks.length).toFixed(1)) : 50;
 
   // Find review for the current active week
   const activeReview = reviews.find(r => r.weekIndex === activeWeek);
@@ -98,7 +104,7 @@ export default function WeeklyOverview({
                 onClick={() => setActiveWeek(w.weekIndex)}
                 style={{
                   width: '100%',
-                  background: isActive ? 'rgba(13, 148, 136, 0.15)' : 'rgba(255, 255, 255, 0.01)',
+                  background: isActive ? 'color-mix(in srgb, var(--primary) 15%, transparent)' : 'rgba(255, 255, 255, 0.01)',
                   border: isActive ? '1px solid var(--primary-hover)' : '1px solid var(--border-color)',
                   borderRadius: '0',
                   padding: '14px 16px',

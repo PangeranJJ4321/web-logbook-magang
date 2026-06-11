@@ -14,12 +14,18 @@ interface DashboardWrapperProps {
   initialEntries: LogEntry[];
   initialReviews: WeeklyReview[];
   userFullName: string;
+  targetHours: number;
+  internshipStart: string;
+  internshipEnd: string;
 }
 
 export default function DashboardWrapper({
   initialEntries,
   initialReviews,
   userFullName,
+  targetHours,
+  internshipStart,
+  internshipEnd,
 }: DashboardWrapperProps) {
   // Determine current week index based on today's date
   const [activeWeek, setActiveWeek] = useState(1);
@@ -32,9 +38,9 @@ export default function DashboardWrapper({
 
   // Calculate and set initial active week once on client mount
   useEffect(() => {
-    const currentWeekIndex = getWeekIndexForDate(new Date());
+    const currentWeekIndex = getWeekIndexForDate(new Date(), internshipStart, internshipEnd);
     setActiveWeek(currentWeekIndex);
-  }, []);
+  }, [internshipStart, internshipEnd]);
 
   const handleOpenAddForm = () => {
     setEditData(null);
@@ -83,7 +89,7 @@ export default function DashboardWrapper({
             Logbook Magang
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
-            Halo, <strong style={{ color: 'var(--primary-hover)' }}>{userFullName}</strong>! Kelola aktivitas dan target 900 jam magang Anda disini.
+            Halo, <strong style={{ color: 'var(--primary-hover)' }}>{userFullName}</strong>! Kelola aktivitas dan target {targetHours} jam magang Anda disini.
           </p>
         </div>
         
@@ -137,13 +143,21 @@ export default function DashboardWrapper({
             </button>
           </div>
 
-          <StatsCard entries={initialEntries} />
+          <StatsCard
+            entries={initialEntries}
+            targetHours={targetHours}
+            internshipStart={internshipStart}
+            internshipEnd={internshipEnd}
+          />
           
           <WeeklyOverview
             entries={initialEntries}
             reviews={initialReviews}
             activeWeek={activeWeek}
             setActiveWeek={handleSelectWeek}
+            targetHours={targetHours}
+            internshipStart={internshipStart}
+            internshipEnd={internshipEnd}
           />
         </div>
 
@@ -154,6 +168,8 @@ export default function DashboardWrapper({
             activeWeek={activeWeek}
             onEdit={handleOpenEditForm}
             onDeleteSuccess={handleCloseForm}
+            internshipStart={internshipStart}
+            internshipEnd={internshipEnd}
           />
         </div>
       </div>
@@ -163,6 +179,8 @@ export default function DashboardWrapper({
         isOpen={isFormOpen}
         onClose={handleCloseForm}
         editData={editData}
+        internshipStart={internshipStart}
+        internshipEnd={internshipEnd}
       />
     </div>
   );

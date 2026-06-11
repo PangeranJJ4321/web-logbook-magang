@@ -3,15 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { LogEntry, LogEntryInput, ACTIVITY_CATEGORIES, ActivityCategory } from '@/types';
 import { createLogEntry, updateLogEntry } from '@/app/actions';
-import { calculateDuration } from '@/utils/dateHelpers';
+import { calculateDuration, formatIndonesianDate } from '@/utils/dateHelpers';
 
 interface LogEntryFormProps {
   isOpen: boolean;
   onClose: () => void;
   editData: LogEntry | null;
+  internshipStart: string;
+  internshipEnd: string;
 }
 
-export default function LogEntryForm({ isOpen, onClose, editData }: LogEntryFormProps) {
+export default function LogEntryForm({
+  isOpen,
+  onClose,
+  editData,
+  internshipStart,
+  internshipEnd,
+}: LogEntryFormProps) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('08:00');
@@ -37,18 +45,20 @@ export default function LogEntryForm({ isOpen, onClose, editData }: LogEntryForm
     } else {
       // Set default date to today's date clamped within the internship range if possible
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
       
-      // Clamp date to 2026-05-20 if before, or 2026-09-20 if after
       const todayStr = `${year}-${month}-${day}`;
-      const year2026 = todayStr.startsWith('2026');
       
-      if (year2026 && today >= new Date('2026-05-20') && today <= new Date('2026-09-20')) {
+      const startRange = new Date(internshipStart);
+      const endRange = new Date(internshipEnd);
+      
+      if (today >= startRange && today <= endRange) {
         setDate(todayStr);
       } else {
-        setDate('2026-05-20');
+        setDate(internshipStart);
       }
       
       setTitle('');
@@ -59,7 +69,7 @@ export default function LogEntryForm({ isOpen, onClose, editData }: LogEntryForm
       setDocumentation('');
     }
     setError(null);
-  }, [editData, isOpen]);
+  }, [editData, isOpen, internshipStart, internshipEnd]);
 
   // Recalculate duration in real-time
   useEffect(() => {
@@ -95,17 +105,23 @@ export default function LogEntryForm({ isOpen, onClose, editData }: LogEntryForm
     }
 
     const logDate = new Date(date);
-    const startRange = new Date('2026-05-20');
-    const endRange = new Date('2026-09-20');
+    const startRange = new Date(internshipStart);
+    const endRange = new Date(internshipEnd);
     
     if (logDate < startRange || logDate > endRange) {
-      setError('Tanggal harus berada dalam rentang magang (20 Mei - 20 September 2026)');
+      setError(`Tanggal harus berada dalam rentang magang (${formatIndonesianDate(startRange)} s/d ${formatIndonesianDate(endRange)})`);
       setIsSubmitting(false);
       return;
     }
 
     if (duration <= 0) {
       setError('Jam selesai harus setelah jam mulai');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (duration > 16) {
+      setError('Durasi kerja harian tidak boleh melebihi 16 jam');
       setIsSubmitting(false);
       return;
     }
@@ -213,8 +229,8 @@ export default function LogEntryForm({ isOpen, onClose, editData }: LogEntryForm
               <input
                 type="date"
                 className="form-input"
-                min="2026-05-20"
-                max="2026-09-20"
+                min={internshipStart}
+                max={internshipEnd}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 disabled={isSubmitting}

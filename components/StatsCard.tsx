@@ -3,14 +3,16 @@
 import React from 'react';
 import { LogEntry } from '@/types';
 import { ACTIVITY_CATEGORIES } from '@/types';
+import { formatIndonesianDate } from '@/utils/dateHelpers';
 
 interface StatsCardProps {
   entries: LogEntry[];
+  targetHours: number;
+  internshipStart: string;
+  internshipEnd: string;
 }
 
-export default function StatsCard({ entries }: StatsCardProps) {
-  const targetHours = 900;
-  
+export default function StatsCard({ entries, targetHours, internshipStart, internshipEnd }: StatsCardProps) {
   // Calculate total completed hours
   const completedHours = entries.reduce((acc, entry) => acc + entry.durationHours, 0);
   const remainingHours = Math.max(targetHours - completedHours, 0);
@@ -20,8 +22,8 @@ export default function StatsCard({ entries }: StatsCardProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const startRange = new Date('2026-05-20T00:00:00');
-  const endRange = new Date('2026-09-20T23:59:59');
+  const startRange = new Date(internshipStart);
+  const endRange = new Date(internshipEnd);
   
   let daysRemaining = 0;
   if (today < startRange) {
@@ -85,7 +87,7 @@ export default function StatsCard({ entries }: StatsCardProps) {
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
         <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '4px' }}>Statistik Akumulasi Jam</h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Target: {targetHours} Jam (20 Mei - 20 Sep 2026)</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Target: {targetHours} Jam ({formatIndonesianDate(startRange)} s/d {formatIndonesianDate(endRange)})</p>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
